@@ -1,0 +1,28 @@
+.navBar-container {
+  background-color: var(--black);
+  -webkit-text-fill-color: var(--white);
+  padding-left: 0%;
+  display: flex;
+  align-items: center;
+  height: 75px;
+}
+
+.profile-icon {
+  max-height: 50px;
+  height: auto;
+  border-radius: 50%;
+  margin: 0 5% 0 5%;
+}
+
+.logout-button {
+  background-color: var(--black);
+  color: var(--white);
+  border: none;
+  font-size: var(--m);
+  font-family: "Poppins";
+  transition-duration: 0.3s;
+}
+
+.logout-button:hover {
+  color: var(--primary);
+}

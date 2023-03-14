@@ -1,0 +1,29 @@
+/* Fill me in :) */
+.mood-selector {
+  background-color: var(--white);
+  color: var(--black);
+  box-sizing: border-box;
+  border-radius: var(--s);
+  font-family: "Poppins";
+  font-size: 10px;
+  padding: 4px 8px 4px 8px;
+  border: 1px solid transparent;
+  margin: 4px;
+  transition-duration: 0.3s;
+}
+
+.mood-selector:hover {
+  color: var(--primary);
+}
+
+.mood-selector-scroll {
+  justify-content: center;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  column-gap: var(--m);
+}
+
+.mood-selector-scroll::-webkit-scrollbar {
+  display: none;
+}

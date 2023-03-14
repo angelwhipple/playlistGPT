@@ -4,7 +4,8 @@ import { Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
 import NotFound from "./pages/NotFound.js";
-import Skeleton from "./pages/Skeleton.js";
+import Home from "./pages/Home.js";
+import NavBar from "./modules/NavBar.js";
 
 import "../utilities.css";
 
@@ -34,6 +35,7 @@ const App = () => {
     post("/api/login", { token: userToken }).then((user) => {
       setUserId(user._id);
       post("/api/initsocket", { socketid: socket.id });
+      post("/api/setpfp", { id: user._id, pfp: decodedCredential.picture });
     });
   };
 
@@ -43,20 +45,18 @@ const App = () => {
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Skeleton
-            path="/"
-            handleLogin={handleLogin}
-            handleLogout={handleLogout}
-            userId={userId}
-          />
-        }
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <NavBar userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home path="/" handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 };
 

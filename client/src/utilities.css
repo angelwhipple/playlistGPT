@@ -15,15 +15,16 @@
 */
 
 /* TODO: REPLACE WITH YOUR OWN FONT! */
-@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 
 :root {
-  --primary: #396dff;
-  --primary--dim: #6987db;
-  --darkgrey: #d4d4d4;
-  --medgrey: #e0e0e0;
-  --grey: #f7f7f7;
+  --primary: #ff8400;
+  --darkgrey: #727272;
+  --medgrey: #8b8b8b;
+  --lightgrey: #d6d6d6;
+  --translucent: #00000050;
   --white: #fff;
+  --black: #020006;
 
   --xs: 4px;
   --s: 8px;
@@ -44,6 +45,11 @@ form {
 
 .u-flex {
   display: flex;
+}
+
+.u-reverseFlex {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .u-flexColumn {
@@ -87,4 +93,16 @@ form {
 
 .u-link:hover {
   color: var(--primary--dim);
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.floatRight {
+  float: right;
 }
