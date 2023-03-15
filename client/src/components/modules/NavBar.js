@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { navigate } from "@gatsbyjs/reach-router";
 import { get, post } from "../../utilities";
 import { socket } from "../../client-socket";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
@@ -24,9 +23,17 @@ const NavBar = (props) => {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <nav className="navBar-container">
         {props.userId ? (
-          <div className="u-flex">
-            <img src={profilePicture} className="profile-icon" />
-            <div>
+          <>
+            <div className="profile-icon-container">
+              <img
+                src={profilePicture}
+                className="profile-icon u-pointer"
+                onClick={() => {
+                  props.setShowProfile(true);
+                }}
+              />
+            </div>
+            <div className="logout-button-container">
               <button
                 className="logout-button u-pointer"
                 onClick={() => {
@@ -37,9 +44,11 @@ const NavBar = (props) => {
                 logout
               </button>
             </div>
-          </div>
+          </>
         ) : (
-          <GoogleLogin onSuccess={props.handleLogin} onError={(err) => console.log(err)} />
+          <div className="logout-button-container">
+            <GoogleLogin onSuccess={props.handleLogin} onError={(err) => console.log(err)} />
+          </div>
         )}
       </nav>
     </GoogleOAuthProvider>

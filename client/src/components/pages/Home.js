@@ -1,18 +1,26 @@
 import React from "react";
-import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
-
 import "../../utilities.css";
 import "./Home.css";
 import { get, post } from "../../utilities";
 import { useState, useEffect } from "react";
+import MoodModal from "../modules/MoodModal";
+import ProfileModal from "../modules/ProfileModal";
 
-const Skeleton = ({ userId, handleLogin, handleLogout }) => {
+const Home = (props) => {
   const [moodSelectors, setMoodSelectors] = useState([]);
+  const [showMoodPrompt, setShowMoodPrompt] = useState(false);
+  const [currentMood, setCurrentMood] = useState("");
   const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "INTROSPECTIVE", "CHILL"];
 
   useEffect(() => {
     let moodButtons = moods.map((mood) => (
-      <button className="mood-selector u-pointer u-inlineBlock" onClick={() => {}}>
+      <button
+        className="mood-selector u-pointer u-inlineBlock"
+        onClick={() => {
+          setCurrentMood(mood);
+          setShowMoodPrompt(true);
+        }}
+      >
         {mood}
       </button>
     ));
@@ -22,11 +30,25 @@ const Skeleton = ({ userId, handleLogin, handleLogout }) => {
   return (
     <>
       <div className="u-textCenter">
-        <h4>how are you feeling today?</h4>
+        <h4>HOW DO YOU FEEL TODAY?</h4>
         <div className="mood-selector-scroll">{moodSelectors}</div>
+        {props.showProfile ? (
+          <ProfileModal userId={props.userId} setShowProfile={props.setShowProfile} />
+        ) : (
+          <></>
+        )}
+        {showMoodPrompt ? (
+          <MoodModal
+            mood={currentMood}
+            userId={props.userId}
+            setShowMoodPrompt={setShowMoodPrompt}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
 };
 
-export default Skeleton;
+export default Home;

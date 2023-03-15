@@ -18,6 +18,7 @@ import { get, post } from "../utilities";
  */
 const App = () => {
   const [userId, setUserId] = useState(undefined);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
@@ -46,12 +47,24 @@ const App = () => {
 
   return (
     <>
-      <NavBar userId={userId} handleLogin={handleLogin} handleLogout={handleLogout} />
+      <NavBar
+        userId={userId}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+        setShowProfile={setShowProfile}
+      />
       <Routes>
         <Route
           path="/"
           element={
-            <Home path="/" handleLogin={handleLogin} handleLogout={handleLogout} userId={userId} />
+            <Home
+              path="/"
+              handleLogin={handleLogin}
+              handleLogout={handleLogout}
+              userId={userId}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile}
+            />
           }
         />
         <Route path="*" element={<NotFound />} />

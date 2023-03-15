@@ -14,7 +14,6 @@
 * much after initial creation.
 */
 
-/* TODO: REPLACE WITH YOUR OWN FONT! */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 
 :root {
@@ -105,4 +104,8 @@ form {
 
 .floatRight {
   float: right;
+}
+
+.floatLeft {
+  float: left;
 }
