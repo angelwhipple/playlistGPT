@@ -28,7 +28,7 @@ const { response } = require("express");
 const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
 const accessToken =
-  "BQDo5JC8zXdg3_Vco4g8QIJR92QWGj9Bs5znxoyqKN-1cxzJaiO-EZqy4yON467ikvgsnW26uJJmfxOVzxSeq6r1o9N4jqoMWXMIX4OCRR7ybuRfLNmq7FWZNxrsv8yr5q7SQ_4vF9AnJi4T3sJNJwK4wK5u2xm-07DGZBkwfzwkVUilbktXYXeI2_b7vU2hcl2myBY";
+  "BQCeWTwM2suxjDRx85XEJNqkAUOb6P_70TTr4ZKUdJG4fGo9Gb7EkfpJCeYA8syokk0a-wL-6xATxREMyVN2euATReoLzrB1pS0P4o7Jcavl5s6_suVY6tsafNqtQW4aAQLp4YADSFSd85t4aFJSVeEp_jJ8BTka9h_t1oUQHi8WTDYzuQTqjl36540ZxPJiyxCvH3w";
 const config = {
   headers: {
     Authorization: "Bearer " + accessToken,
@@ -111,6 +111,27 @@ router.post("/updatemood", (req, res) => {
       }
     });
   });
+});
+
+router.get("/customsongs", async (req, res) => {
+  const query = "https://api.spotify.com/v1/tracks/";
+  const customSongs = { songs: [] };
+
+  const asyncProcess = async () => {
+    await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
+      if (customMood) {
+        for (const songID of customMood.tracks) {
+          let finalQuery = query + songID;
+          await axios.get(finalQuery, config).then((response) => {
+            data = response.data;
+            customSongs.songs.push(data);
+          });
+        }
+      }
+    });
+  };
+  await asyncProcess();
+  res.send(customSongs);
 });
 
 // anything else falls to this "not found" case

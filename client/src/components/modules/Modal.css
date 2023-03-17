@@ -38,6 +38,44 @@
   color: var(--primary);
 }
 
+.song-button {
+  background-color: var(--white);
+  color: var(--black);
+  box-sizing: border-box;
+  border-radius: var(--s);
+  font-family: "Poppins";
+  font-size: 12px;
+  padding: 4px 8px 4px 8px;
+  border: 1px solid var(--black);
+  margin: 4px;
+  transition-duration: 0.3s;
+}
+
+.song-button:hover {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.song-button-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  column-gap: 8px;
+}
+
+.song-button-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.song-button-container {
+  height: fit-content;
+  width: auto;
+  position: relative;
+}
+
+.minus:hover {
+  color: var(--primary);
+}
 .col-30 {
   float: left;
   width: 30%;

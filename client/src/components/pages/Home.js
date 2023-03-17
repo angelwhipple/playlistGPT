@@ -5,12 +5,14 @@ import { get, post } from "../../utilities";
 import { useState, useEffect } from "react";
 import MoodModal from "../modules/MoodModal";
 import ProfileModal from "../modules/ProfileModal";
+import Playlist from "../modules/Playlist";
 
 const Home = (props) => {
   const [moodSelectors, setMoodSelectors] = useState([]);
   const [moodPrompt, toggleMoodPrompt] = useState(false);
   const [currentMood, toggleCurrentMood] = useState("");
-  const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "INTROSPECTIVE", "CHILL"];
+  const [playlists, setPlaylists] = useState([]);
+  const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "HYPE", "CHILL"];
 
   useEffect(() => {
     let moodButtons = moods.map((mood) => (
@@ -39,7 +41,15 @@ const Home = (props) => {
           <></>
         )}
         {moodPrompt ? (
-          <MoodModal mood={currentMood} userId={props.userId} toggleMoodPrompt={toggleMoodPrompt} />
+          props.userId ? (
+            <MoodModal
+              mood={currentMood}
+              userId={props.userId}
+              toggleMoodPrompt={toggleMoodPrompt}
+            />
+          ) : (
+            <MoodModal mood={currentMood} toggleMoodPrompt={toggleMoodPrompt} />
+          )
         ) : (
           <></>
         )}
