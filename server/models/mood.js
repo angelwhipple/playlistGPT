@@ -4,6 +4,7 @@ const MoodSchema = new mongoose.Schema({
   mood: String,
   artists: [String],
   tracks: [String],
+  creator: String,
 });
 
 // compile model from schema

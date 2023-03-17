@@ -5,6 +5,8 @@ const UserSchema = new mongoose.Schema({
   googleid: String,
   pfp: String,
   occupation: String,
+  // list of corresponding Mood IDs
+  customMoods: [String],
 });
 
 // compile model from schema

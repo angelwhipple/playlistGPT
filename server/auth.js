@@ -28,6 +28,7 @@ function getOrCreateUser(user) {
       googleid: user.sub,
       pfp: "https://i.pinimg.com/236x/28/17/c3/2817c3f578a17cb3e98acd25e68a4a4b.jpg",
       occupation: "",
+      customMoods: [],
     });
 
     return newUser.save();

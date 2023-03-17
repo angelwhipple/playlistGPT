@@ -8,17 +8,18 @@ import ProfileModal from "../modules/ProfileModal";
 
 const Home = (props) => {
   const [moodSelectors, setMoodSelectors] = useState([]);
-  const [showMoodPrompt, setShowMoodPrompt] = useState(false);
-  const [currentMood, setCurrentMood] = useState("");
+  const [moodPrompt, toggleMoodPrompt] = useState(false);
+  const [currentMood, toggleCurrentMood] = useState("");
   const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "INTROSPECTIVE", "CHILL"];
 
   useEffect(() => {
     let moodButtons = moods.map((mood) => (
       <button
+        key={mood}
         className="mood-selector u-pointer u-inlineBlock"
         onClick={() => {
-          setCurrentMood(mood);
-          setShowMoodPrompt(true);
+          toggleCurrentMood(mood);
+          toggleMoodPrompt(true);
         }}
       >
         {mood}
@@ -37,12 +38,8 @@ const Home = (props) => {
         ) : (
           <></>
         )}
-        {showMoodPrompt ? (
-          <MoodModal
-            mood={currentMood}
-            userId={props.userId}
-            setShowMoodPrompt={setShowMoodPrompt}
-          />
+        {moodPrompt ? (
+          <MoodModal mood={currentMood} userId={props.userId} toggleMoodPrompt={toggleMoodPrompt} />
         ) : (
           <></>
         )}

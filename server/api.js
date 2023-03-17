@@ -7,13 +7,11 @@
 |
 */
 
-// spotify code: AQCRbsfGo6V1zkrLNPoSdO6tjhLTD5RkvWUe-jtQKNPz2VXeNFuZaknBK6U-GLpOQVxsS74ET92Whd0uLupEUZgXEVawYBTfbrHIUTU8vN_GM6Vn_4CmxAMa96Xb5X_3R2u9dhQ2xQ0Qq9pMWF7EsZUtdHG7GlBiXw
-// spotify access token: {"access_token":"BQDrl41UB2Sid65FL716io1NVkoAZ8ZYGXlj_Ew-Uog00bGCdznld704AQQw_5Gj4BarZGKFH-iz3Pq_44rKXnqXQ9eOKQpWZg9N6McXGfNREoocx0tqpIXRi4p2BF7HSEDbFfi8iFU6wXJxRO09DzXXRwsKM-j1dKtJvOABUQQ4-RtcEHnF1dekpZrmpiBcs0to1C4","token_type":"Bearer","expires_in":3600,"refresh_token":"AQBmxQivBSMpNmvegbqos3QpOw8FMC_U9muPYXIdWkVSqZEu-aNMbuvfA-8XAkshkZuKEXxzY8wub3GFKQNY5BJT-XsvTC6GYVrUBAc1R6OUfieFi5XNHyvOmTXEvgfSdPg"}
-
 const express = require("express");
 
 // import models so we can interact with the database
 const User = require("./models/user");
+const Mood = require("./models/mood");
 
 // import authentication library
 const auth = require("./auth");
@@ -23,9 +21,19 @@ const router = express.Router();
 
 //initialize socket
 const socketManager = require("./server-socket");
+const { ProgressPlugin } = require("webpack");
+const { response } = require("express");
 
 // spotify API
 const { default: axios } = require("axios");
+const { redirect } = require("react-router-dom");
+const accessToken =
+  "BQBwyCTYcbzs0GJBHXR73j9eh5hKVWb6CV83NklkuKrB29YGfrM3pYLpGVtkb6C3zef4qLJAKilXmHkkunlzf3hh4jhtv4_Ln7q_SnKDdPkOpugND1IFij1f0tDvSTMIoLMccVdkAfHiXT-vo26nV0UpZhcTJ6H-2RUgd95Smc3ge-KUrSX_GHCU6zdUJazeYhx0mSw";
+const config = {
+  headers: {
+    Authorization: "Bearer " + accessToken,
+  },
+};
 
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
@@ -41,8 +49,8 @@ router.get("/whoami", (req, res) => {
 router.post("/initsocket", (req, res) => {
   // do nothing if user not logged in
   if (req.user)
-    socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
-  res.send({});
+    // socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
+    res.send({});
 });
 
 // |------------------------------|
@@ -56,17 +64,50 @@ router.post("/setpfp", (req, res) => {
   });
 });
 
-// const config = {
-//   headers: {
-//     Authorization:
-//       "Bearer BQDrl41UB2Sid65FL716io1NVkoAZ8ZYGXlj_Ew-Uog00bGCdznld704AQQw_5Gj4BarZGKFH-iz3Pq_44rKXnqXQ9eOKQpWZg9N6McXGfNREoocx0tqpIXRi4p2BF7HSEDbFfi8iFU6wXJxRO09DzXXRwsKM-j1dKtJvOABUQQ4-RtcEHnF1dekpZrmpiBcs0to1C4",
-//   },
-// };
-// axios
-//   .get("https://api.spotify.com/v1/search?q=playboicarti&type=artist", config)
-//   .then((response) => {
-//     console.log(response);
-//   });
+router.post("/updatemood", (req, res) => {
+  User.findById(req.body.id).then((user) => {
+    let query = "https://api.spotify.com/v1/search?q=";
+    let [song, artist] = ["", ""];
+    if ("artist" in req.body) {
+      query += req.body.artist + "&type=artist";
+      axios.get(query, config).then((response) => {
+        const data = response.data;
+        // get the artist ID of first result
+        artist = data.artists.items[0];
+        // console.log(artist.id);
+      });
+    }
+    if ("song" in req.body) {
+      query += req.body.song + "&type=track";
+      axios.get(query, config).then((response) => {
+        const data = response.data;
+        // get the track ID of first result
+        song = data.tracks.items[0];
+        // console.log(song.id);
+      });
+    }
+    // check if custom mood exists for this user, if not create one
+    if (user.customMoods.includes(req.body.mood)) {
+      Mood.findOneAndUpdate(
+        { creator: req.body.id, mood: req.body.mood },
+        song ? { $push: { songs: song } } : { $push: { artists: artist } }
+      ).then(res.send({}));
+    } else {
+      const customMood = new Mood({
+        mood: req.body.mood,
+        artists: artist !== "" ? [artist.id] : [],
+        songs: song !== "" ? [song.id] : [],
+        creator: req.body.id,
+      });
+      // save custom mood NAME to user's list of custom moods
+      customMood.save().then((mood) => {
+        User.findByIdAndUpdate(req.body.id, { $push: { customMoods: mood.mood } }).then(
+          res.send({})
+        );
+      });
+    }
+  });
+});
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {
