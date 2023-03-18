@@ -5,13 +5,12 @@ import { get, post } from "../../utilities";
 import { useState, useEffect } from "react";
 import MoodModal from "../modules/MoodModal";
 import ProfileModal from "../modules/ProfileModal";
-import Playlist from "../modules/Playlist";
 
 const Home = (props) => {
   const [moodSelectors, setMoodSelectors] = useState([]);
   const [moodPrompt, toggleMoodPrompt] = useState(false);
   const [currentMood, toggleCurrentMood] = useState("");
-  const [playlists, setPlaylists] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
   const [loading, setLoading] = useState(false);
   const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "HYPE", "CHILL"];
 
@@ -47,7 +46,7 @@ const Home = (props) => {
               mood={currentMood}
               userId={props.userId}
               toggleMoodPrompt={toggleMoodPrompt}
-              setPlaylists={setPlaylists}
+              setPlaylist={setPlaylist}
               setLoading={setLoading}
             />
           ) : (
@@ -55,23 +54,26 @@ const Home = (props) => {
               mood={currentMood}
               toggleMoodPrompt={toggleMoodPrompt}
               setLoading={setLoading}
+              setPlaylist={setPlaylist}
             />
           )
         ) : (
           <></>
         )}
-        {loading ? (
-          <div class="center">
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
+        {!loading && playlist.length !== 0 ? (
+          <div className="playlist-container">{playlist}</div>
+        ) : loading ? (
+          <div className="center">
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
           </div>
         ) : (
           <></>

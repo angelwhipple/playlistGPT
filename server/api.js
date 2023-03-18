@@ -29,7 +29,7 @@ const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
 const { Model } = require("mongoose");
 const accessToken =
-  "BQCS1K6EGwU-wX5RDVKKq19KUnltmgA_DbAJpqRuP7h-A-T5kKqx1ePC8mVfKGbQOpIwTZAvTvxyVy3wpA6rGX3iBnItxodgH7sT3p16nsDlUrfOWvJOUYr9s40JQh_qG3kYylnpyA5H4sn2iKTvTbG6lQQ8BnLcyWfHjJswdrF9-QpYI65sqxjw9_Du71IxfHENdyk";
+  "BQB6vR4JQx1RIMlWNIdgGAqthwzdDBiU-0QG6kWvJMwPdwQBvzRF6a8hbLKmUk5OYwDW3jbbdVxJELr1wuQn-SyVYq7JuxBYf538CAgNbbegC81c1Kj7lc7cvNHStzKNHeqWJOv0db728O6R_s4LoZDWRoKo694OH90F-WMo2uHFZPq7CSK74YF5LD7g17H2cmBb8T4";
 const config = {
   headers: {
     Authorization: "Bearer " + accessToken,
@@ -70,6 +70,7 @@ router.post("/updatemood", (req, res) => {
     let query = "https://api.spotify.com/v1/search?q=";
     let [song, artist] = ["", ""];
 
+    // search song/artist
     const asyncProcess = async () => {
       if ("artist" in req.body) {
         query += req.body.artist + "&type=artist";
@@ -89,31 +90,34 @@ router.post("/updatemood", (req, res) => {
       }
     };
 
-    asyncProcess()
-      .then(() => {
-        // check if custom mood exists for this user, if not create one
-        if (user.customMoods.includes(req.body.mood)) {
-          Mood.findOneAndUpdate(
-            { creator: req.body.id, mood: req.body.mood },
-            song ? { $push: { tracks: song } } : { $push: { artists: artist } }
-          );
-        } else {
-          const customMood = new Mood({
-            mood: req.body.mood,
-            artists: artist ? [artist] : [],
-            tracks: song ? [song] : [],
-            creator: req.body.id,
-          });
-          // save custom mood NAME to user's list of custom moods
-          customMood.save().then((mood) => {
-            User.findByIdAndUpdate(req.body.id, { $push: { customMoods: mood.mood } });
-          });
-        }
-      })
-      .then(() => {
-        Mood.findOne({ mood: req.body.mood, creator: "training data" }).then((training) => {
+    // update song/artist to user data
+    const asyncProcess2 = async () => {
+      // check if custom mood exists for this user, if not create one
+      if (user.customMoods.includes(req.body.mood)) {
+        await Mood.findOneAndUpdate(
+          { creator: req.body.id, mood: req.body.mood },
+          song ? { $push: { tracks: song } } : { $push: { artists: artist } }
+        );
+      } else {
+        const customMood = new Mood({
+          mood: req.body.mood,
+          artists: artist ? [artist] : [],
+          tracks: song ? [song] : [],
+          creator: req.body.id,
+        });
+        // save custom mood NAME to user's list of custom moods
+        await customMood.save().then(async (mood) => {
+          await User.findByIdAndUpdate(req.body.id, { $push: { customMoods: mood.mood } });
+        });
+      }
+    };
+
+    // update song/artist to training data
+    const asyncProcess3 = async () => {
+      await Mood.findOne({ mood: req.body.mood, creator: "training data" }).then(
+        async (training) => {
           if (training) {
-            Mood.findOneAndUpdate(
+            await Mood.findOneAndUpdate(
               { mood: req.body.mood, creator: "training data" },
               song ? { $push: { tracks: song } } : { $push: { artists: artist } }
             ).then(res.send({}));
@@ -124,10 +128,17 @@ router.post("/updatemood", (req, res) => {
               tracks: song ? [song] : [],
               creator: "training data",
             });
-            trainingDataMood.save().then(res.send({}));
+            await trainingDataMood.save().then(res.send({}));
           }
-        });
+        }
+      );
+    };
+
+    asyncProcess().then(() => {
+      asyncProcess2().then(() => {
+        asyncProcess3();
       });
+    });
   });
 });
 
@@ -185,6 +196,38 @@ router.post("/deleteartist", (req, res) => {
     { creator: req.body.id, mood: req.body.mood },
     { $pull: { artists: req.body.artistId } }
   ).then(res.send({}));
+});
+
+// PLAYLIST GENERATOR
+
+const MAX_SEED = 5;
+
+router.get("/customizedplaylist", (req, res) => {
+  const query = "https://api.spotify.com/v1/recommendations?q=";
+  Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then((userMood) => {
+    let finalQuery = query;
+    if (userMood) {
+      let seedsRemaining = MAX_SEED;
+      let seedArtists = "&seed_artists=";
+      for (let i = 0; i < Math.max(2, userMood.artists.length); ++i) {
+        let rand = Math.floor(Math.random() * userMood.artists.length);
+        let artistId = userMood.artists[rand];
+        seedArtists += artistId + ",";
+        seedsRemaining--;
+      }
+      finalQuery += seedArtists;
+      let seedTracks = "&seed_tracks=";
+      for (let i = 0; i < Math.max(seedsRemaining, userMood.tracks.length); ++i) {
+        let rand = Math.floor(Math.random() * userMood.tracks.length);
+        let songId = userMood.tracks[rand];
+        seedTracks += songId + ",";
+      }
+      finalQuery += seedTracks;
+      axios.get(finalQuery, config).then((response) => {
+        res.send(response.data);
+      });
+    }
+  });
 });
 
 // anything else falls to this "not found" case

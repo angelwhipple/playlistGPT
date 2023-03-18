@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { get, post } from "../../utilities";
 import "./Modal.css";
+import Song from "./Song";
 
 const MoodModal = (props) => {
   const [songInput, setSongInput] = useState("");
@@ -15,6 +16,7 @@ const MoodModal = (props) => {
         for (const songData of response.songs) {
           tempSongs.push(
             <button
+              key={songData.id}
               onClick={() => {
                 post("/api/deletesong", {
                   id: props.userId,
@@ -35,6 +37,7 @@ const MoodModal = (props) => {
         for (const artistData of response.artists) {
           tempArtists.push(
             <button
+              key={artistData.id}
               onClick={() => {
                 post("/api/deleteartist", {
                   id: props.userId,
@@ -51,7 +54,7 @@ const MoodModal = (props) => {
         setCustomArtists(tempArtists);
       });
     }
-  });
+  }, []);
 
   const handleInput_song = (event) => {
     setSongInput(event.target.value);
@@ -76,13 +79,31 @@ const MoodModal = (props) => {
   };
 
   const generatePlaylists = () => {
-    let playlists = [];
+    const playlist = [];
     if (!props.userId) {
-      get("/api/defaultplaylists", { mood: props.mood }).then((response) => {});
+      get("/api/defaultplaylist", { mood: props.mood });
     } else {
-      get("/api/customizedplaylists", { id: props.userId, mood: props.mood }).then(
-        (response) => {}
-      );
+      get("/api/customizedplaylist", { id: props.userId, mood: props.mood }).then((data) => {
+        console.log(data.tracks);
+        const recommendedTracks = [];
+        for (const track of data.tracks) {
+          recommendedTracks.push(
+            <Song
+              key={track.id}
+              songId={track.id}
+              userId={props.userId}
+              mood={props.mood}
+              artist={track.artists[0].name}
+              imageURL={track.album.images[0].url}
+              release={track.album.release_date}
+              playbackURL={track.preview_url}
+              spotifyURL={track.external_urls.spotify}
+            />
+          );
+        }
+        props.setPlaylist(recommendedTracks);
+        props.setLoading(false);
+      });
     }
   };
 
@@ -158,6 +179,7 @@ const MoodModal = (props) => {
           <button
             className="modal-button u-pointer"
             onClick={() => {
+              generatePlaylists();
               props.setLoading(true);
               props.toggleMoodPrompt(false);
             }}

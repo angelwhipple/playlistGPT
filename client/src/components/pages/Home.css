@@ -27,6 +27,12 @@
   display: none;
 }
 
+.playlist-container {
+  background-color: var(--black);
+  display: flex;
+  flex-direction: column;
+}
+
 /* loading animation */
 .center {
   height: 50vh;

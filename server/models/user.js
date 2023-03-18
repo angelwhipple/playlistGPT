@@ -4,7 +4,8 @@ const UserSchema = new mongoose.Schema({
   name: String,
   googleid: String,
   pfp: String,
-  occupation: String,
+  // list of saved Playlist IDs
+  playlists: [String],
   // list of corresponding Mood IDs
   customMoods: [String],
 });

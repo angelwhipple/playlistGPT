@@ -1,0 +1,21 @@
+.song-container {
+  width: fit-content;
+  height: fit-content;
+  background-color: var(--black);
+  border: 1px solid var(--primary);
+  padding: 8px;
+  display: block;
+  width: 250px;
+  white-space: nowrap;
+}
+
+.song-image {
+  background-position-y: center;
+  background-position-x: center;
+  background-repeat: no-repeat;
+  max-width: 160px;
+  height: auto;
+  max-height: 100px;
+  align-self: center;
+  margin: 4px;
+}
