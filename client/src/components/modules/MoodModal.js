@@ -79,13 +79,12 @@ const MoodModal = (props) => {
   };
 
   const generatePlaylists = () => {
-    const playlist = [];
+    const recommendedTracks = [];
     if (!props.userId) {
       get("/api/defaultplaylist", { mood: props.mood });
     } else {
       get("/api/customizedplaylist", { id: props.userId, mood: props.mood }).then((data) => {
         console.log(data.tracks);
-        const recommendedTracks = [];
         for (const track of data.tracks) {
           recommendedTracks.push(
             <Song
@@ -93,9 +92,9 @@ const MoodModal = (props) => {
               songId={track.id}
               userId={props.userId}
               mood={props.mood}
+              name={track.name}
               artist={track.artists[0].name}
               imageURL={track.album.images[0].url}
-              release={track.album.release_date}
               playbackURL={track.preview_url}
               spotifyURL={track.external_urls.spotify}
             />

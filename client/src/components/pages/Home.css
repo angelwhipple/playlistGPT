@@ -31,6 +31,32 @@
   background-color: var(--black);
   display: flex;
   flex-direction: column;
+  row-gap: var(--s);
+  justify-content: center;
+  border: 2px solid var(--primary);
+  height: fit-content;
+  width: fit-content;
+  padding: var(--l);
+  border-radius: var(--m);
+  margin: auto;
+}
+
+.playlist-header {
+  -webkit-text-fill-color: var(--primary);
+}
+
+.playlist-scroll {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--s);
+  justify-content: start;
+  width: fit-content;
+  height: 450px;
+  overflow-y: scroll;
+}
+
+.playlist-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* loading animation */

@@ -1,21 +1,94 @@
 .song-container {
-  width: fit-content;
+  width: 300px;
   height: fit-content;
   background-color: var(--black);
   border: 1px solid var(--primary);
+  border-radius: var(--s);
   padding: 8px;
   display: block;
-  width: 250px;
   white-space: nowrap;
+  position: relative;
 }
 
 .song-image {
   background-position-y: center;
   background-position-x: center;
   background-repeat: no-repeat;
-  max-width: 160px;
-  height: auto;
-  max-height: 100px;
-  align-self: center;
+  height: 100px;
+  max-width: auto;
+  border-radius: var(--s);
+}
+
+.song-info {
+  width: 200px;
+  height: 100px;
+  overflow-x: scroll;
+}
+
+.song-info::-webkit-scrollbar {
+  display: none;
+}
+
+.song-name {
+  font-size: 12px;
+  font-weight: 400;
+  -webkit-text-fill-color: var(--primary);
+  text-align: left;
+  font-family: "Poppins";
+  margin: 5%;
+}
+
+.song-artist {
+  font-size: 10px;
+  font-weight: 300;
+  -webkit-text-fill-color: var(--primary);
+  text-align: left;
+  font-family: "Poppins";
+  margin: 5%;
+}
+
+.favorite-button {
+  color: var(--primary);
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+  transition-duration: 0.3s;
+}
+
+.favorite-button:hover {
+  color: red;
+}
+
+.play-button {
+  color: var(--primary);
+  position: absolute;
+  left: 37%;
+  bottom: 5%;
+  transition-duration: 0.3s;
+  height: 40px;
+  width: auto;
+}
+
+.play-button:hover {
+  color: red;
+}
+
+.redirect-button {
+  background-color: var(--black);
+  color: var(--primary);
+  box-sizing: border-box;
+  border-radius: var(--s);
+  font-family: "Poppins";
+  font-size: 10px;
+  padding: 4px 8px 4px 8px;
+  border: 1px solid transparent;
   margin: 4px;
+  transition-duration: 0.3s;
+  position: absolute;
+  bottom: 0%;
+  right: 10%;
+}
+
+.redirect-button:hover {
+  color: red;
 }

@@ -61,7 +61,10 @@ const Home = (props) => {
           <></>
         )}
         {!loading && playlist.length !== 0 ? (
-          <div className="playlist-container">{playlist}</div>
+          <div className="playlist-container">
+            <h3 className="playlist-header">YOUR {currentMood} PLAYLIST</h3>
+            <div className="playlist-scroll">{playlist}</div>
+          </div>
         ) : loading ? (
           <div className="center">
             <div className="wave"></div>
