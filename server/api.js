@@ -27,8 +27,9 @@ const { response } = require("express");
 // spotify API
 const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
+const { Model } = require("mongoose");
 const accessToken =
-  "BQCeWTwM2suxjDRx85XEJNqkAUOb6P_70TTr4ZKUdJG4fGo9Gb7EkfpJCeYA8syokk0a-wL-6xATxREMyVN2euATReoLzrB1pS0P4o7Jcavl5s6_suVY6tsafNqtQW4aAQLp4YADSFSd85t4aFJSVeEp_jJ8BTka9h_t1oUQHi8WTDYzuQTqjl36540ZxPJiyxCvH3w";
+  "BQCS1K6EGwU-wX5RDVKKq19KUnltmgA_DbAJpqRuP7h-A-T5kKqx1ePC8mVfKGbQOpIwTZAvTvxyVy3wpA6rGX3iBnItxodgH7sT3p16nsDlUrfOWvJOUYr9s40JQh_qG3kYylnpyA5H4sn2iKTvTbG6lQQ8BnLcyWfHjJswdrF9-QpYI65sqxjw9_Du71IxfHENdyk";
 const config = {
   headers: {
     Authorization: "Bearer " + accessToken,
@@ -88,28 +89,45 @@ router.post("/updatemood", (req, res) => {
       }
     };
 
-    asyncProcess().then(() => {
-      // check if custom mood exists for this user, if not create one
-      if (user.customMoods.includes(req.body.mood)) {
-        Mood.findOneAndUpdate(
-          { creator: req.body.id, mood: req.body.mood },
-          song ? { $push: { tracks: song } } : { $push: { artists: artist } }
-        ).then(res.send({}));
-      } else {
-        const customMood = new Mood({
-          mood: req.body.mood,
-          artists: artist ? [artist] : [],
-          tracks: song ? [song] : [],
-          creator: req.body.id,
-        });
-        // save custom mood NAME to user's list of custom moods
-        customMood.save().then((mood) => {
-          User.findByIdAndUpdate(req.body.id, { $push: { customMoods: mood.mood } }).then(
-            res.send({})
+    asyncProcess()
+      .then(() => {
+        // check if custom mood exists for this user, if not create one
+        if (user.customMoods.includes(req.body.mood)) {
+          Mood.findOneAndUpdate(
+            { creator: req.body.id, mood: req.body.mood },
+            song ? { $push: { tracks: song } } : { $push: { artists: artist } }
           );
+        } else {
+          const customMood = new Mood({
+            mood: req.body.mood,
+            artists: artist ? [artist] : [],
+            tracks: song ? [song] : [],
+            creator: req.body.id,
+          });
+          // save custom mood NAME to user's list of custom moods
+          customMood.save().then((mood) => {
+            User.findByIdAndUpdate(req.body.id, { $push: { customMoods: mood.mood } });
+          });
+        }
+      })
+      .then(() => {
+        Mood.findOne({ mood: req.body.mood, creator: "training data" }).then((training) => {
+          if (training) {
+            Mood.findOneAndUpdate(
+              { mood: req.body.mood, creator: "training data" },
+              song ? { $push: { tracks: song } } : { $push: { artists: artist } }
+            ).then(res.send({}));
+          } else {
+            const trainingDataMood = new Mood({
+              mood: req.body.mood,
+              artists: artist ? [artist] : [],
+              tracks: song ? [song] : [],
+              creator: "training data",
+            });
+            trainingDataMood.save().then(res.send({}));
+          }
         });
-      }
-    });
+      });
   });
 });
 
@@ -120,8 +138,8 @@ router.get("/customsongs", async (req, res) => {
   const asyncProcess = async () => {
     await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
       if (customMood) {
-        for (const songID of customMood.tracks) {
-          let finalQuery = query + songID;
+        for (const songId of customMood.tracks) {
+          let finalQuery = query + songId;
           await axios.get(finalQuery, config).then((response) => {
             data = response.data;
             customSongs.songs.push(data);
@@ -132,6 +150,41 @@ router.get("/customsongs", async (req, res) => {
   };
   await asyncProcess();
   res.send(customSongs);
+});
+
+router.post("/deletesong", (req, res) => {
+  Mood.findOneAndUpdate(
+    { creator: req.body.id, mood: req.body.mood },
+    { $pull: { tracks: req.body.songId } }
+  ).then(res.send({}));
+});
+
+router.get("/customartists", async (req, res) => {
+  const query = "https://api.spotify.com/v1/artists/";
+  const customArtists = { artists: [] };
+
+  const asyncProcess = async () => {
+    await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
+      if (customMood) {
+        for (const artistId of customMood.artists) {
+          let finalQuery = query + artistId;
+          await axios.get(finalQuery, config).then((response) => {
+            data = response.data;
+            customArtists.artists.push(data);
+          });
+        }
+      }
+    });
+  };
+  await asyncProcess();
+  res.send(customArtists);
+});
+
+router.post("/deleteartist", (req, res) => {
+  Mood.findOneAndUpdate(
+    { creator: req.body.id, mood: req.body.mood },
+    { $pull: { artists: req.body.artistId } }
+  ).then(res.send({}));
 });
 
 // anything else falls to this "not found" case

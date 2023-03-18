@@ -46,6 +46,7 @@ const Home = (props) => {
               mood={currentMood}
               userId={props.userId}
               toggleMoodPrompt={toggleMoodPrompt}
+              setPlaylists={setPlaylists}
             />
           ) : (
             <MoodModal mood={currentMood} toggleMoodPrompt={toggleMoodPrompt} />

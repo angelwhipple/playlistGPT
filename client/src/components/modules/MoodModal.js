@@ -30,6 +30,26 @@ const MoodModal = (props) => {
         }
         setCustomSongs(tempSongs);
       });
+      get("/api/customartists", { id: props.userId, mood: props.mood }).then((response) => {
+        let tempArtists = [];
+        for (const artistData of response.artists) {
+          tempArtists.push(
+            <button
+              onClick={() => {
+                post("/api/deleteartist", {
+                  id: props.userId,
+                  mood: props.mood,
+                  artistId: artistData.id,
+                });
+              }}
+              className="song-button u-pointer"
+            >
+              {artistData.name}
+            </button>
+          );
+        }
+        setCustomArtists(tempArtists);
+      });
     }
   });
 
@@ -53,8 +73,19 @@ const MoodModal = (props) => {
       setArtistInput("");
     }
     post("/api/updatemood", body);
-    props.toggleMoodPrompt(false);
   };
+
+  const generatePlaylists = () => {
+    let playlists = [];
+    if (!props.userId) {
+      get("/api/defaultplaylists", { mood: props.mood }).then((response) => {});
+    } else {
+      get("/api/customizedplaylists", { id: props.userId, mood: props.mood }).then(
+        (response) => {}
+      );
+    }
+  };
+
   return (
     <div className="modal-Container">
       <div className="modal-Content">
@@ -70,12 +101,21 @@ const MoodModal = (props) => {
               ) : (
                 <></>
               )}
+              {customArtists.length !== 0 ? (
+                <div className="u-flex-justifyCenter">
+                  <label className="col-30">YOUR ARTISTS</label>
+                  <div className="song-button-scroll">{customArtists}</div>
+                </div>
+              ) : (
+                <></>
+              )}
               <div className="u-flex-justifyCenter">
                 <label className="col-30">ADD AN ARTIST</label>
                 <input
                   className="col-70"
                   type="text"
                   placeholder="enter artist name"
+                  value={artistInput}
                   onChange={handleInput_artist}
                 ></input>
                 <button
@@ -95,6 +135,7 @@ const MoodModal = (props) => {
                   className="col-70"
                   type="text"
                   placeholder="enter song name"
+                  value={songInput}
                   onChange={handleInput_song}
                 ></input>
                 <button
