@@ -12,6 +12,7 @@ const Home = (props) => {
   const [moodPrompt, toggleMoodPrompt] = useState(false);
   const [currentMood, toggleCurrentMood] = useState("");
   const [playlists, setPlaylists] = useState([]);
+  const [loading, setLoading] = useState(false);
   const moods = ["NEUTRAL", "CHEERFUL", "SAD", "MOTIVATED", "ROMANTIC", "HYPE", "CHILL"];
 
   useEffect(() => {
@@ -47,10 +48,31 @@ const Home = (props) => {
               userId={props.userId}
               toggleMoodPrompt={toggleMoodPrompt}
               setPlaylists={setPlaylists}
+              setLoading={setLoading}
             />
           ) : (
-            <MoodModal mood={currentMood} toggleMoodPrompt={toggleMoodPrompt} />
+            <MoodModal
+              mood={currentMood}
+              toggleMoodPrompt={toggleMoodPrompt}
+              setLoading={setLoading}
+            />
           )
+        ) : (
+          <></>
+        )}
+        {loading ? (
+          <div class="center">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
         ) : (
           <></>
         )}

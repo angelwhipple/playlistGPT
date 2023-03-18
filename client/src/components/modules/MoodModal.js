@@ -158,6 +158,7 @@ const MoodModal = (props) => {
           <button
             className="modal-button u-pointer"
             onClick={() => {
+              props.setLoading(true);
               props.toggleMoodPrompt(false);
             }}
           >
