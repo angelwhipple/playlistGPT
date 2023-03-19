@@ -107,6 +107,10 @@ const port = process.env.PORT || 3000;
 const server = http.Server(app);
 socketManager.init(server);
 
-server.listen(port, () => {
-  console.log(`Server running on port: ${port}`);
-});
+server.listen(
+  port,
+  "0.0.0.0"
+  // () => {
+  //   console.log(`Server running on port: ${port}`);
+  // }
+);
