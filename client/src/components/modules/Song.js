@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { AiFillPlayCircle } from "react-icons/ai";
+import { AiFillPauseCircle } from "react-icons/ai";
 import { get, post } from "../../utilities";
 import "./Song.css";
 
 const Song = (props) => {
-  let playback = new Audio(props.playbackURL);
+  const [paused, setPaused] = useState(true);
+
+  const playback = useRef(new Audio(props.playbackURL));
 
   const startPlayback = (event) => {
-    playback.play();
+    playback.current.play();
+    setPaused(false);
+  };
+
+  const pausePlayback = (event) => {
+    playback.current.pause();
+    setPaused(true);
   };
 
   const updateMood = (event) => {
@@ -24,7 +33,11 @@ const Song = (props) => {
         <div className="song-info">
           <p className="song-name">{props.name}</p>
           <p className="song-artist">by {props.artist}</p>
-          <AiFillPlayCircle onClick={startPlayback} className="play-button u-pointer" />
+          {paused ? (
+            <AiFillPlayCircle onClick={startPlayback} className="play-button u-pointer" />
+          ) : (
+            <AiFillPauseCircle onClick={pausePlayback} className="play-button u-pointer" />
+          )}
           <a href={props.spotifyURL} target="_blank">
             <button className="redirect-button u-pointer">LISTEN ON SPOTIFY</button>
           </a>
