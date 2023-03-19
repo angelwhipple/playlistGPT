@@ -36,9 +36,6 @@ const config = {
   },
 };
 
-// const get = require("./../client/src/utilities");
-// const get = require("./../client/src/utilities");
-
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
 router.get("/whoami", (req, res) => {
@@ -131,12 +128,14 @@ router.post("/updatemood", (req, res) => {
               tracks: song ? [song] : [],
               creator: "training data",
             });
-            await trainingDataMood.save().then(res.send({}));
+            await trainingDataMood.save().then(() => {
+              socketManager.getIo.emit("updatedmood", req.body.mood);
+              res.send({});
+            });
           }
         }
       );
     };
-
     asyncProcess().then(() => {
       asyncProcess2().then(() => {
         asyncProcess3();

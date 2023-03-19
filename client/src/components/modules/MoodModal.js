@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { get, post } from "../../utilities";
 import "./Modal.css";
 import Song from "./Song";
+import { socket } from "../../client-socket";
 
 const MoodModal = (props) => {
   const [songInput, setSongInput] = useState("");
@@ -9,7 +10,7 @@ const MoodModal = (props) => {
   const [customArtists, setCustomArtists] = useState([]);
   const [customSongs, setCustomSongs] = useState([]);
 
-  useEffect(() => {
+  const updateButtons = () => {
     if (props.userId) {
       get("/api/customsongs", { id: props.userId, mood: props.mood }).then((response) => {
         let tempSongs = [];
@@ -54,6 +55,10 @@ const MoodModal = (props) => {
         setCustomArtists(tempArtists);
       });
     }
+  };
+
+  useEffect(() => {
+    updateButtons();
   }, []);
 
   const handleInput_song = (event) => {
@@ -75,7 +80,9 @@ const MoodModal = (props) => {
       body["artist"] = artistInput;
       setArtistInput("");
     }
-    post("/api/updatemood", body);
+    post("/api/updatemood", body).then((response) => {
+      updateButtons();
+    });
   };
 
   const generatePlaylists = async () => {
