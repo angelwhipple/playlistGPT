@@ -35,9 +35,9 @@ const auth = require("./auth");
 const socketManager = require("./server-socket");
 
 // Server configuration below
-const mongoConnectionURL =
-  "mongodb+srv://awhipp:wavywhip03@playlistgpt.d36stoy.mongodb.net/?retryWrites=true&w=majority";
-// const mongoConnectionURL = process.env.MONGO_SRV;
+// const mongoConnectionURL =
+//   "mongodb+srv://awhipp:wavywhip03@playlistgpt.d36stoy.mongodb.net/?retryWrites=true&w=majority";
+const mongoConnectionURL = process.env.MONGO_SRV;
 
 const databaseName = "playlistGPT";
 
@@ -65,7 +65,7 @@ app.use(express.json());
 app.use(
   session({
     // TODO: add a SESSION_SECRET string in your .env file, and replace the secret with process.env.SESSION_SECRET
-    secret: "session-secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   })
@@ -103,7 +103,7 @@ app.use((err, req, res, next) => {
 });
 
 // hardcode port to 3000 for now
-const port = 3000;
+const port = process.env.PORT || 3000;
 const server = http.Server(app);
 socketManager.init(server);
 
