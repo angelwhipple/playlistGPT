@@ -37,7 +37,7 @@ const socketManager = require("./server-socket");
 // Server configuration below
 // const mongoConnectionURL =
 //   "mongodb+srv://awhipp:wavywhip03@playlistgpt.d36stoy.mongodb.net/?retryWrites=true&w=majority";
-const mongoConnectionURL = process.env.MONGO_SRV;
+const mongoConnectionURL = process.env.ATLAS_SRV;
 
 const databaseName = "playlistGPT";
 
