@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { AiFillPlayCircle } from "react-icons/ai";
+import { get, post } from "../../utilities";
 import "./Song.css";
 
 const Song = (props) => {
@@ -8,6 +9,12 @@ const Song = (props) => {
 
   const startPlayback = (event) => {
     playback.play();
+  };
+
+  const updateMood = (event) => {
+    if (props.userId) {
+      post("/api/likesong", { userId: props.userId, songId: props.songId, mood: props.mood });
+    }
   };
 
   return (
@@ -22,7 +29,7 @@ const Song = (props) => {
             <button className="redirect-button u-pointer">LISTEN ON SPOTIFY</button>
           </a>
           <div className="favorite-button u-pointer">
-            <FaRegHeart />
+            <FaRegHeart onClick={updateMood} />
           </div>
         </div>
       </div>

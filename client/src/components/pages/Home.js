@@ -22,6 +22,7 @@ const Home = (props) => {
         onClick={() => {
           toggleCurrentMood(mood);
           toggleMoodPrompt(true);
+          props.setShowPlaylist(false);
         }}
       >
         {mood}
@@ -48,6 +49,7 @@ const Home = (props) => {
               toggleMoodPrompt={toggleMoodPrompt}
               setPlaylist={setPlaylist}
               setLoading={setLoading}
+              setShowPlaylist={props.setShowPlaylist}
             />
           ) : (
             <MoodModal
@@ -55,12 +57,13 @@ const Home = (props) => {
               toggleMoodPrompt={toggleMoodPrompt}
               setLoading={setLoading}
               setPlaylist={setPlaylist}
+              setShowPlaylist={props.setShowPlaylist}
             />
           )
         ) : (
           <></>
         )}
-        {!loading && playlist.length !== 0 ? (
+        {!loading && playlist.length !== 0 && props.showPlaylist ? (
           <div className="playlist-container">
             <h3 className="playlist-header">YOUR {currentMood} PLAYLIST</h3>
             <div className="playlist-scroll">{playlist}</div>

@@ -19,6 +19,7 @@ import { get, post } from "../utilities";
 const App = () => {
   const [userId, setUserId] = useState(undefined);
   const [showProfile, setShowProfile] = useState(false);
+  const [showPlaylist, setShowPlaylist] = useState(false);
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
@@ -52,6 +53,7 @@ const App = () => {
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         setShowProfile={setShowProfile}
+        setShowPlaylist={setShowPlaylist}
       />
       <Routes>
         <Route
@@ -64,6 +66,8 @@ const App = () => {
               userId={userId}
               showProfile={showProfile}
               setShowProfile={setShowProfile}
+              setShowPlaylist={setShowPlaylist}
+              showPlaylist={showPlaylist}
             />
           }
         />

@@ -78,32 +78,37 @@ const MoodModal = (props) => {
     post("/api/updatemood", body);
   };
 
-  const generatePlaylists = () => {
+  const generatePlaylists = async () => {
     const recommendedTracks = [];
-    if (!props.userId) {
-      get("/api/defaultplaylist", { mood: props.mood });
-    } else {
-      get("/api/customizedplaylist", { id: props.userId, mood: props.mood }).then((data) => {
-        console.log(data.tracks);
-        for (const track of data.tracks) {
-          recommendedTracks.push(
-            <Song
-              key={track.id}
-              songId={track.id}
-              userId={props.userId}
-              mood={props.mood}
-              name={track.name}
-              artist={track.artists[0].name}
-              imageURL={track.album.images[0].url}
-              playbackURL={track.preview_url}
-              spotifyURL={track.external_urls.spotify}
-            />
-          );
-        }
-        props.setPlaylist(recommendedTracks);
-        props.setLoading(false);
+    let trackData = [];
+    if (props.userId) {
+      await get("/api/customizedplaylist", { id: props.userId, mood: props.mood }).then((data) => {
+        trackData = data.tracks;
       });
     }
+    // check if logged out or custom playlist couldnt be made
+    if (trackData === undefined || !props.userId) {
+      await get("/api/defaultplaylist", { mood: props.mood }).then((defaultData) => {
+        trackData = defaultData.tracks;
+      });
+    }
+    for (const track of trackData) {
+      recommendedTracks.push(
+        <Song
+          key={track.id}
+          songId={track.id}
+          userId={props.userId}
+          mood={props.mood}
+          name={track.name}
+          artist={track.artists[0].name}
+          imageURL={track.album.images[0].url}
+          playbackURL={track.preview_url}
+          spotifyURL={track.external_urls.spotify}
+        />
+      );
+    }
+    props.setPlaylist(recommendedTracks);
+    props.setLoading(false);
   };
 
   return (
@@ -181,6 +186,7 @@ const MoodModal = (props) => {
               generatePlaylists();
               props.setLoading(true);
               props.toggleMoodPrompt(false);
+              props.setShowPlaylist(true);
             }}
           >
             generate

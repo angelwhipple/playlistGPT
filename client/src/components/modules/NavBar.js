@@ -30,6 +30,7 @@ const NavBar = (props) => {
                 className="profile-icon u-pointer"
                 onClick={() => {
                   props.setShowProfile(true);
+                  props.setShowPlaylist(false);
                 }}
               />
             </div>
@@ -39,6 +40,7 @@ const NavBar = (props) => {
                 onClick={() => {
                   googleLogout();
                   props.handleLogout();
+                  props.setShowPlaylist(false);
                 }}
               >
                 logout
