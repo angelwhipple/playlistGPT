@@ -23,6 +23,8 @@ const MoodModal = (props) => {
                   id: props.userId,
                   mood: props.mood,
                   songId: songData.id,
+                }).then((response) => {
+                  updateButtons();
                 });
               }}
               className="song-button u-pointer"
@@ -60,11 +62,9 @@ const MoodModal = (props) => {
   useEffect(() => {
     updateButtons();
   }, []);
-
   const handleInput_song = (event) => {
     setSongInput(event.target.value);
   };
-
   const handleInput_artist = (event) => {
     setArtistInput(event.target.value);
   };
@@ -96,10 +96,16 @@ const MoodModal = (props) => {
     // check if logged out or custom playlist couldnt be made
     if (trackData === undefined || !props.userId) {
       await get("/api/defaultplaylist", { mood: props.mood }).then((defaultData) => {
-        trackData = defaultData.tracks;
+        // check for training data tracklist or latest albums
+        if (defaultData.tracks) {
+          trackData = defaultData.tracks;
+        } else {
+          trackData = defaultData.latestTracks;
+        }
       });
     }
     for (const track of trackData) {
+      console.log(track);
       recommendedTracks.push(
         <Song
           key={track.id}
@@ -108,7 +114,7 @@ const MoodModal = (props) => {
           mood={props.mood}
           name={track.name}
           artist={track.artists[0].name}
-          imageURL={track.album.images[0].url}
+          imageURL={track.album ? track.album.images[0].url : track.images[0].url}
           playbackURL={track.preview_url}
           spotifyURL={track.external_urls.spotify}
         />

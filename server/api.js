@@ -29,7 +29,7 @@ const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
 const { Model } = require("mongoose");
 const accessToken =
-  "BQDHuhqWsCjETOyuxm1i09_FaVT3Rc-jtXFycWKet6SSSDNhC5Ec_cmo5CrtWoUM74Fb2fUtlKMmO0wrAPIYCail6CVy7gU8OXzkdu8csSnoJ98OkYZ1n2XPJy2zJ2K739SLOFZ998QXLEt_v_pZzeNOxjKkjVJKO5knNCten3CjZ7Dw_KedQ1Aa-cmPLFCcreVE5Zc";
+  "BQBhIP8yUSm3vdHKn-MFN7qsFcDZTWBwK_AvANzusJ3rFjE8-DqivfLE09nXoKf8T6dLrnZej6a-Z5IdEyToI9rz8WUw8S7lAgTbDXO_-9EXEQNZ3bvHmWCUhq40o4RcwP0ZArJFV3944v633Kax89s1CUJ1-cXz1MAbFH33iJNVK74lZctWU3CziPlooO6f915a7XU";
 const config = {
   headers: {
     Authorization: "Bearer " + accessToken,
@@ -236,31 +236,52 @@ router.get("/customizedplaylist", (req, res) => {
 });
 
 // get playlist built from training data
-router.get("/defaultplaylist", (req, res) => {
-  Mood.findOne({ mood: req.query.mood, creator: "training data" }).then((trainingDataMood) => {
-    let finalQuery = query;
-    if (trainingDataMood) {
-      let seedsRemaining = MAX_SEED;
-      let seedArtists = "&seed_artists=";
-      for (let i = 0; i < Math.min(2, trainingDataMood.artists.length); ++i) {
-        let rand = Math.floor(Math.random() * trainingDataMood.artists.length);
-        let artistId = trainingDataMood.artists[rand];
-        seedArtists += artistId + ",";
-        seedsRemaining--;
+router.get("/defaultplaylist", async (req, res) => {
+  await Mood.findOne({ mood: req.query.mood, creator: "training data" }).then(
+    async (trainingDataMood) => {
+      let finalQuery = query;
+      if (trainingDataMood) {
+        let seedsRemaining = MAX_SEED;
+        let seedArtists = "&seed_artists=";
+        for (let i = 0; i < Math.min(2, trainingDataMood.artists.length); ++i) {
+          let rand = Math.floor(Math.random() * trainingDataMood.artists.length);
+          let artistId = trainingDataMood.artists[rand];
+          seedArtists += artistId + ",";
+          seedsRemaining--;
+        }
+        finalQuery += seedArtists;
+        let seedTracks = "&seed_tracks=";
+        for (let i = 0; i < Math.min(seedsRemaining, trainingDataMood.tracks.length); ++i) {
+          let rand = Math.floor(Math.random() * trainingDataMood.tracks.length);
+          let songId = trainingDataMood.tracks[rand];
+          seedTracks += songId + ",";
+        }
+        finalQuery += seedTracks;
+        await axios.get(finalQuery, config).then((response) => {
+          res.send(response.data);
+        });
+      } else {
+        const newQuery = "https://api.spotify.com/v1/browse/new-releases?q=&country=US";
+        const latestTracks = { latestTracks: [] };
+        await axios.get(newQuery, config).then(async (response) => {
+          for (const album of response.data.albums.items) {
+            const albumQuery = "https://api.spotify.com/v1/albums/" + album.id;
+            await axios.get(albumQuery, config).then(async (albumReponse) => {
+              let rand = Math.floor(Math.random() * albumReponse.data.tracks.items.length);
+              let trackData = albumReponse.data.tracks.items[rand];
+              let artistId = trackData.artists[0].id;
+              const artistQuery = "https://api.spotify.com/v1/artists/" + artistId;
+              await axios.get(artistQuery, config).then((artistData) => {
+                trackData.images = artistData.data.images;
+                latestTracks.latestTracks.push(trackData);
+              });
+            });
+          }
+        });
+        res.send(latestTracks);
       }
-      finalQuery += seedArtists;
-      let seedTracks = "&seed_tracks=";
-      for (let i = 0; i < Math.min(seedsRemaining, trainingDataMood.tracks.length); ++i) {
-        let rand = Math.floor(Math.random() * trainingDataMood.tracks.length);
-        let songId = trainingDataMood.tracks[rand];
-        seedTracks += songId + ",";
-      }
-      finalQuery += seedTracks;
-      axios.get(finalQuery, config).then((response) => {
-        res.send(response.data);
-      });
     }
-  });
+  );
 });
 
 router.post("/likesong", (req, res) => {
