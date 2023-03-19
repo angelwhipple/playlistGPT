@@ -7,8 +7,10 @@ import "./Song.css";
 
 const Song = (props) => {
   const [paused, setPaused] = useState(true);
+  const [favorited, setFavorited] = useState(false);
 
   const playback = useRef(new Audio(props.playbackURL));
+  playback.current.loop = true;
 
   const startPlayback = (event) => {
     playback.current.play();
@@ -24,6 +26,7 @@ const Song = (props) => {
     if (props.userId) {
       post("/api/likesong", { userId: props.userId, songId: props.songId, mood: props.mood });
     }
+    setFavorited(true);
   };
 
   return (
@@ -41,9 +44,13 @@ const Song = (props) => {
           <a href={props.spotifyURL} target="_blank">
             <button className="redirect-button u-pointer">LISTEN ON SPOTIFY</button>
           </a>
-          <div className="favorite-button u-pointer">
-            <FaRegHeart onClick={updateMood} />
-          </div>
+          {!favorited ? (
+            <div className="favorite-button u-pointer">
+              <FaRegHeart onClick={updateMood} />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>
