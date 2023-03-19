@@ -39,6 +39,7 @@ const App = () => {
       post("/api/initsocket", { socketid: socket.id });
       post("/api/setpfp", { id: user._id, pfp: decodedCredential.picture });
     });
+    setShowPlaylist(false);
   };
 
   const handleLogout = () => {
