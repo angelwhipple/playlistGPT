@@ -4,7 +4,7 @@ import { socket } from "../../client-socket";
 import { GoogleOAuthProvider, GoogleLogin, googleLogout } from "@react-oauth/google";
 import "./NavBar.css";
 
-const GOOGLE_CLIENT_ID = "657241798155-043h4jqt13q33onh5ik97fubr60buel6.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "577941677274-3aeilnjtp2hj98r8jvcsa6jvkoq9r5kc.apps.googleusercontent.com";
 
 const NavBar = (props) => {
   const [profilePicture, setProfilePicture] = useState("");
