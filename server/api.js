@@ -29,7 +29,7 @@ const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
 const { Model } = require("mongoose");
 const accessToken =
-  "BQCO6ZIjoevqFy7Y7bZQNaUy3iYUtp86_iMdpqw_6jpEdzY_gMEYImLVltHxZUiHQH0sqh1izKYBNSlP7pTsSoHswe-gCdx41KMia__gtcBtKSDDmCgNCYKQDoynKt85eTGlScSvCSalRovIdk9aTM4VNq_r3S9_mx-YZzzezLoRW7Kpj-DwnD-jWmLN0d9bPy-b8VY";
+  "BQC-52NZpZ8pGdOqZGl-nmKt3GYhH0yKfWrkMk_32TAGLxjYa2n1y6_jydavIWZ7wKLHgnptyYkHqIzajnwhW92XMwR6t7hpftUq_jzOVClpQ7638CzVdKFsqEie4KHTsYY4Eelih50vlV2qtqpn3_o1FYt-M9X4aM-SvkeNoAmP1Va7jyBU-EP-L3jJ4p7AAYBtOBs";
 const config = {
   headers: {
     Authorization: "Bearer " + accessToken,
@@ -129,7 +129,7 @@ router.post("/updatemood", (req, res) => {
               creator: "training data",
             });
             await trainingDataMood.save().then(() => {
-              socketManager.getIo.emit("updatedmood", req.body.mood);
+              // socketManager.getIo.emit("updatedmood", req.body.mood);
               res.send({});
             });
           }
