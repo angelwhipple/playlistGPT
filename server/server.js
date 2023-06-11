@@ -19,9 +19,9 @@ const validator = require("./validator");
 validator.checkSetup();
 
 //allow us to use process.ENV
-import dotenv from dotenv
-dotenv.config()
-// require("dotenv").config();
+// import dotenv from dotenv
+// dotenv.config()
+require("dotenv").config();
 
 //import libraries needed for the webserver to work!
 const http = require("http");
