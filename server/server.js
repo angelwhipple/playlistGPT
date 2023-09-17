@@ -18,11 +18,6 @@
 const validator = require("./validator");
 validator.checkSetup();
 
-// allows us to use process.ENV
-// import dotenv from dotenv
-// dotenv.config()
-require("dotenv").config();
-
 //import libraries needed for the webserver to work!
 const http = require("http");
 const express = require("express"); // backend framework for our node server.
@@ -32,6 +27,10 @@ const path = require("path"); // provide utilities for working with file and dir
 
 const api = require("./api");
 const auth = require("./auth");
+// allows us to use process.ENV
+// import dotenv from dotenv
+// dotenv.config()
+require("dotenv").config();
 
 // socket stuff
 const socketManager = require("./server-socket");
