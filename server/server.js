@@ -38,7 +38,6 @@ const socketManager = require("./server-socket");
 
 // Server configuration below
 const mongoConnectionURL = process.env.MONGO_SRV;
-
 const databaseName = "playlistGPT";
 
 // mongoose 7 warning
@@ -109,4 +108,5 @@ socketManager.init(server);
 
 server.listen(port, () => {
   console.log(`Server running on port: ${port}`);
+  // console.log(mongoConnectionURL);
 });
