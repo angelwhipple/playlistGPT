@@ -18,7 +18,7 @@
 const validator = require("./validator");
 validator.checkSetup();
 
-//allow us to use process.ENV
+// allows us to use process.ENV
 // import dotenv from dotenv
 // dotenv.config()
 require("dotenv").config();
