@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "hotloader": "webpack serve --config ./webpack.config.js --mode development --port 5050",
-    "start": "nodemon --ignore client/",
+    "start": "node --ignore client/",
     "build": "webpack"
   },
   "repository": {
