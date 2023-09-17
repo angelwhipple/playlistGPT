@@ -50,6 +50,7 @@ const Home = (props) => {
               setPlaylist={setPlaylist}
               setLoading={setLoading}
               setShowPlaylist={props.setShowPlaylist}
+              accessToken={props.accessToken}
             />
           ) : (
             <MoodModal
@@ -58,6 +59,7 @@ const Home = (props) => {
               setLoading={setLoading}
               setPlaylist={setPlaylist}
               setShowPlaylist={props.setShowPlaylist}
+              accessToken={props.accessToken}
             />
           )
         ) : (

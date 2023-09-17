@@ -12,7 +12,11 @@ const MoodModal = (props) => {
 
   const updateButtons = () => {
     if (props.userId) {
-      get("/api/customsongs", { id: props.userId, mood: props.mood }).then((response) => {
+      get("/api/customsongs", {
+        accessToken: props.accessToken,
+        id: props.userId,
+        mood: props.mood,
+      }).then((response) => {
         let tempSongs = [];
         for (const songData of response.songs) {
           tempSongs.push(
@@ -35,7 +39,11 @@ const MoodModal = (props) => {
         }
         setCustomSongs(tempSongs);
       });
-      get("/api/customartists", { id: props.userId, mood: props.mood }).then((response) => {
+      get("/api/customartists", {
+        accessToken: props.accessToken,
+        id: props.userId,
+        mood: props.mood,
+      }).then((response) => {
         let tempArtists = [];
         for (const artistData of response.artists) {
           tempArtists.push(
@@ -89,23 +97,28 @@ const MoodModal = (props) => {
     const recommendedTracks = [];
     let trackData = [];
     if (props.userId) {
-      await get("/api/customizedplaylist", { id: props.userId, mood: props.mood }).then((data) => {
+      await get("/api/customizedplaylist", {
+        accessToken: props.accessToken,
+        id: props.userId,
+        mood: props.mood,
+      }).then((data) => {
         trackData = data.tracks;
       });
     }
     // check if logged out or custom playlist couldnt be made
     if (trackData === undefined || !props.userId) {
-      await get("/api/defaultplaylist", { mood: props.mood }).then((defaultData) => {
-        // check for training data tracklist or latest albums
-        if (defaultData.tracks) {
-          trackData = defaultData.tracks;
-        } else {
-          trackData = defaultData.latestTracks;
+      await get("/api/defaultplaylist", { accessToken: props.accessToken, mood: props.mood }).then(
+        (defaultData) => {
+          // check for training data tracklist or latest albums
+          if (defaultData.tracks) {
+            trackData = defaultData.tracks;
+          } else {
+            trackData = defaultData.latestTracks;
+          }
         }
-      });
+      );
     }
     for (const track of trackData) {
-      console.log(track);
       recommendedTracks.push(
         <Song
           key={track.id}

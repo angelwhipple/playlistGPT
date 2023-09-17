@@ -20,6 +20,7 @@ const App = () => {
   const [userId, setUserId] = useState(undefined);
   const [showProfile, setShowProfile] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const [accessToken, setAccessToken] = useState("");
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
@@ -28,7 +29,19 @@ const App = () => {
         setUserId(user._id);
       }
     });
+    refreshToken();
   }, []);
+
+  useEffect(() => {
+    console.log(`Spotify access token: ${accessToken}`);
+  }, [accessToken]);
+
+  const refreshToken = () => {
+    get("/api/spotify").then(async (res) => {
+      setAccessToken((prev) => res.accessToken);
+      setTimeout(refreshToken, 3540000); // set a timer to refresh access token after 59 minutes (in ms)
+    });
+  };
 
   const handleLogin = (credentialResponse) => {
     const userToken = credentialResponse.credential;
@@ -69,6 +82,7 @@ const App = () => {
               setShowProfile={setShowProfile}
               setShowPlaylist={setShowPlaylist}
               showPlaylist={showPlaylist}
+              accessToken={accessToken}
             />
           }
         />

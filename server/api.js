@@ -23,17 +23,33 @@ const router = express.Router();
 const socketManager = require("./server-socket");
 const { ProgressPlugin } = require("webpack");
 const { response } = require("express");
+const request = require("request");
 
 // spotify API
+const SPOTIFY_CLIENT_ID = "d4641c30fa824100b34dde4383a276a1";
+const SPOTIFY_CLIENT_SECRET = "d0f65308c953430d9c1bd0095d9769fb";
+const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token?grant_type=client_credentials";
 const { default: axios } = require("axios");
 const { redirect } = require("react-router-dom");
 const { Model } = require("mongoose");
-const accessToken =
-  "BQC-52NZpZ8pGdOqZGl-nmKt3GYhH0yKfWrkMk_32TAGLxjYa2n1y6_jydavIWZ7wKLHgnptyYkHqIzajnwhW92XMwR6t7hpftUq_jzOVClpQ7638CzVdKFsqEie4KHTsYY4Eelih50vlV2qtqpn3_o1FYt-M9X4aM-SvkeNoAmP1Va7jyBU-EP-L3jJ4p7AAYBtOBs";
+
+// SPOTIFY
 const config = {
   headers: {
-    Authorization: "Bearer " + accessToken,
+    Authorization: `Bearer `,
   },
+};
+const authOptions = {
+  url: "https://accounts.spotify.com/api/token",
+  headers: {
+    Authorization:
+      "Basic " +
+      new Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64"),
+  },
+  form: {
+    grant_type: "client_credentials",
+  },
+  json: true,
 };
 
 router.post("/login", auth.login);
@@ -58,6 +74,14 @@ router.post("/initsocket", (req, res) => {
 // | write your API methods below!|
 // |------------------------------|
 
+router.get("/spotify", async (req, res) => {
+  console.log("[BACKEND] Requesting Spotify access token");
+  request.post(authOptions, async (error, response, body) => {
+    console.log(`[BACKEND] Response body: ${JSON.stringify(body)}`);
+    res.send({ accessToken: body.access_token });
+  });
+});
+
 router.post("/setpfp", (req, res) => {
   User.findByIdAndUpdate(req.body.id, { $set: { pfp: req.body.pfp } }).then((user) => {
     socketManager.getIo().emit("newpfp", user);
@@ -66,6 +90,7 @@ router.post("/setpfp", (req, res) => {
 });
 
 router.post("/updatemood", (req, res) => {
+  config.headers.Authorization += req.body.accessToken; // update Spotify access token
   User.findById(req.body.id).then((user) => {
     let query = "https://api.spotify.com/v1/search?q=";
     let [song, artist] = ["", ""];
@@ -147,6 +172,7 @@ router.post("/updatemood", (req, res) => {
 router.get("/customsongs", async (req, res) => {
   const query = "https://api.spotify.com/v1/tracks/";
   const customSongs = { songs: [] };
+  config.headers.Authorization += req.query.accessToken; // update Spotify access token
 
   const asyncProcess = async () => {
     await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
@@ -175,6 +201,7 @@ router.post("/deletesong", (req, res) => {
 router.get("/customartists", async (req, res) => {
   const query = "https://api.spotify.com/v1/artists/";
   const customArtists = { artists: [] };
+  config.headers.Authorization += req.query.accessToken; // update Spotify access token
 
   const asyncProcess = async () => {
     await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
@@ -207,6 +234,8 @@ const query = "https://api.spotify.com/v1/recommendations?q=";
 
 // get user personalized playlist
 router.get("/customizedplaylist", (req, res) => {
+  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+
   Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then((userMood) => {
     let finalQuery = query;
     if (userMood) {
@@ -237,6 +266,8 @@ router.get("/customizedplaylist", (req, res) => {
 
 // get playlist built from training data
 router.get("/defaultplaylist", async (req, res) => {
+  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+
   await Mood.findOne({ mood: req.query.mood, creator: "training data" }).then(
     async (trainingDataMood) => {
       let finalQuery = query;
