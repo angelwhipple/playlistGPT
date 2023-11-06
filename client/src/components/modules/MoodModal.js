@@ -54,6 +54,8 @@ const MoodModal = (props) => {
                   id: props.userId,
                   mood: props.mood,
                   artistId: artistData.id,
+                }).then((response) => {
+                  updateButtons();
                 });
               }}
               className="song-button u-pointer"
@@ -79,7 +81,7 @@ const MoodModal = (props) => {
 
   const updateMood = (event, field) => {
     event.preventDefault();
-    const body = { id: props.userId, mood: props.mood };
+    const body = { id: props.userId, mood: props.mood, accessToken: props.accessToken };
     if (field === "song" && songInput) {
       body["song"] = songInput;
       setSongInput("");
@@ -168,6 +170,11 @@ const MoodModal = (props) => {
                   placeholder="enter artist name"
                   value={artistInput}
                   onChange={handleInput_artist}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      updateMood(event, "artist");
+                    }
+                  }}
                 ></input>
                 <button
                   type="submit"
@@ -188,6 +195,11 @@ const MoodModal = (props) => {
                   placeholder="enter song name"
                   value={songInput}
                   onChange={handleInput_song}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      updateMood(event, "song");
+                    }
+                  }}
                 ></input>
                 <button
                   type="submit"

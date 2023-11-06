@@ -90,7 +90,7 @@ router.post("/setpfp", (req, res) => {
 });
 
 router.post("/updatemood", (req, res) => {
-  config.headers.Authorization += req.body.accessToken; // update Spotify access token
+  config.headers.Authorization = `Bearer ${req.body.accessToken}`; // update Spotify access token
   User.findById(req.body.id).then((user) => {
     let query = "https://api.spotify.com/v1/search?q=";
     let [song, artist] = ["", ""];
@@ -172,7 +172,7 @@ router.post("/updatemood", (req, res) => {
 router.get("/customsongs", async (req, res) => {
   const query = "https://api.spotify.com/v1/tracks/";
   const customSongs = { songs: [] };
-  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+  config.headers.Authorization = `Bearer ${req.query.accessToken}`; // update Spotify access token
 
   const asyncProcess = async () => {
     await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
@@ -201,7 +201,7 @@ router.post("/deletesong", (req, res) => {
 router.get("/customartists", async (req, res) => {
   const query = "https://api.spotify.com/v1/artists/";
   const customArtists = { artists: [] };
-  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+  config.headers.Authorization = `Bearer ${req.query.accessToken}`; // update Spotify access token
 
   const asyncProcess = async () => {
     await Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then(async (customMood) => {
@@ -234,7 +234,7 @@ const query = "https://api.spotify.com/v1/recommendations?q=";
 
 // get user personalized playlist
 router.get("/customizedplaylist", (req, res) => {
-  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+  config.headers.Authorization = `Bearer ${req.query.accessToken}`; // update Spotify access token
 
   Mood.findOne({ creator: req.query.id, mood: req.query.mood }).then((userMood) => {
     let finalQuery = query;

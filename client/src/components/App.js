@@ -29,7 +29,9 @@ const App = () => {
         setUserId(user._id);
       }
     });
-    refreshToken();
+    if (accessToken === "") {
+      refreshToken();
+    }
   }, []);
 
   useEffect(() => {
