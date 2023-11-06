@@ -266,7 +266,7 @@ router.get("/customizedplaylist", (req, res) => {
 
 // get playlist built from training data
 router.get("/defaultplaylist", async (req, res) => {
-  config.headers.Authorization += req.query.accessToken; // update Spotify access token
+  config.headers.Authorization = `Bearer ${req.query.accessToken}`; // update Spotify access token
 
   await Mood.findOne({ mood: req.query.mood, creator: "training data" }).then(
     async (trainingDataMood) => {
