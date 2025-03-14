@@ -31,6 +31,7 @@ module.exports = {
       cors: {
         origin: [
           "http://localhost:3000",
+          "https://playlistgpt.herokuapp.com/",
           "https://playlist-gpt.vercel.app"
         ],
         methods: ["GET", "POST"],
