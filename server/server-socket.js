@@ -27,7 +27,18 @@ const removeUser = (user, socket) => {
 
 module.exports = {
   init: (http) => {
-    io = require("socket.io")(http);
+    io = require("socket.io")(http, {
+      cors: {
+        origin: [
+          "http://localhost:3000",
+          "https://playlist-gpt.vercel.app"
+        ],
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Authorization"],
+        credentials: true
+      }
+    });
+
 
     io.on("connection", (socket) => {
       console.log(`socket has connected ${socket.id}`);
